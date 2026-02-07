@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milarippa — Converse avec Milarepa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Overlay for sidebar -->
+    <div class="overlay" id="sidebarOverlay"></div>
+    
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content">
+            <p class="modal-title" id="modalTitle">Supprimer ce dialogue ?</p>
+            <p class="modal-message" id="modalMessage">Cette action est irréversible.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-cancel" id="modalCancel">Annuler</button>
+                <button class="modal-btn modal-delete" id="modalConfirm">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Dialogues</h2>
+                <button class="new-chat-btn" onclick="createNewConversation()" title="Nouveau dialogue">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="conversations-list" id="conversationsList"></div>
+        </aside>
+
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-content">
+                    <button class="burger-menu" id="burgerMenu" onclick="toggleSidebar()">
+                        <span></span>
+                    </button>
+                    <div class="logo">
+                        <span class="logo-icon">🏔️</span>
+                        <h1>Milarippa</h1>
+                    </div>
+                    <p class="subtitle">Dialogue avec Jetsun Milarepa, le yogi-poète du Tibet</p>
+                </div>
+            </header>
+
+            <!-- Chat area -->
+            <main class="chat-container" id="chatContainer">
+                <!-- Message d'accueil -->
+                <div class="message milarepa">
+                    <div class="message-avatar">🧘</div>
+                    <div class="message-content">
+                        <p>Ami(e) qui cherches, bienvenue dans ma grotte de montagne.</p>
+                        <p>Je suis Milarepa, le vieux mendiant vêtu de coton. J'ai connu les ténèbres les plus profondes
+                        et la lumière la plus vaste. Pose ta question — que ton cœur parle, et je répondrai
+                        depuis le silence des sommets.</p>
+                        <p class="verse">
+                            <em>Au début rien ne vient,<br>
+                            Au milieu rien ne reste,<br>
+                            À la fin rien ne s'en va.</em>
+                        </p>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Input area -->
+            <footer class="input-area">
+                <div class="input-container">
+                    <textarea
+                        id="messageInput"
+                        placeholder="Pose ta question à Milarepa..."
+                        rows="1"
+                        autofocus
+                    ></textarea>
+                    <button id="sendBtn" onclick="sendMessage()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <p class="disclaimer">Milarippa s'appuie sur les écrits authentiques de Milarepa (1052-1135)</p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="/static/js/chat.js"></script>
+</body>
+</html>

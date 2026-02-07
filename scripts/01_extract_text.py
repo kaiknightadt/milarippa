@@ -1,5 +1,5 @@
 """
-MILARIPPA - Étape 1 : Extraction du texte des PDFs
+MILAREPA - Étape 1 : Extraction du texte des PDFs
 ===================================================
 Lit chaque PDF dans data/raw/ et produit un fichier .txt propre dans data/processed/
 """

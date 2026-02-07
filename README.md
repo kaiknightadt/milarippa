@@ -1,4 +1,4 @@
-# 🏔️ MILARIPPA — Converse avec Milarepa
+# 🏔️ MILAREPA — Converse avec Milarepa
 
 > Un LLM conversationnel qui permet de dialoguer avec Jetsun Milarepa (1052-1135),
 > le yogi-poète tibétain, comme s'il était assis en face de toi dans sa grotte de montagne.

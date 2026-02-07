@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Milarippa — Converse avec Milarepa</title>
+    <title>Milarepa — Converse avec Milarepa</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 </head>
 <body>
     <!-- Overlay for sidebar -->
@@ -28,13 +29,13 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2>Dialogues</h2>
                 <button class="new-chat-btn" onclick="createNewConversation()" title="Nouveau dialogue">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
                 </button>
+                <h2>Dialogues</h2>
             </div>
             <div class="conversations-list" id="conversationsList"></div>
         </aside>
@@ -43,17 +44,22 @@
         <div class="main-content">
             <!-- Header -->
             <header class="header">
+                <button class="burger-menu" id="burgerMenu" onclick="toggleSidebar()">
+                    <span></span>
+                </button>
                 <div class="header-content">
-                    <button class="burger-menu" id="burgerMenu" onclick="toggleSidebar()">
-                        <span></span>
-                    </button>
                     <div class="logo">
                         <span class="logo-icon">🏔️</span>
-                        <h1>Milarippa</h1>
+                        <h1>Milarepa</h1>
                     </div>
-                    <p class="subtitle">Dialogue avec Jetsun Milarepa, le yogi-poète du Tibet</p>
                 </div>
+                <div class="header-spacer"></div>
             </header>
+
+            <!-- Subtitle -->
+            <div class="header-subtitle">
+                <p>Dialogue avec Jetsun Milarepa, le yogi-poète du Tibet</p>
+            </div>
 
             <!-- Chat area -->
             <main class="chat-container" id="chatContainer">
@@ -90,7 +96,7 @@
                         </svg>
                     </button>
                 </div>
-                <p class="disclaimer">Milarippa s'appuie sur les écrits authentiques de Milarepa (1052-1135)</p>
+                <p class="disclaimer">Milarepa s'appuie sur les écrits authentiques de Milarepa (1052-1135)</p>
             </footer>
         </div>
     </div>

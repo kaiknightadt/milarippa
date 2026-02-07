@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background -->
+  <rect width="64" height="64" fill="#0a0a0f"/>
+  
+  <!-- Mountain peaks - Golden color #c4a872 -->
+  <!-- Main peak (center) -->
+  <polygon points="32,8 48,48 16,48" fill="#c4a872"/>
+  <!-- Left peak -->
+  <polygon points="12,28 24,48 8,48" fill="#b39860"/>
+  <!-- Right peak -->
+  <polygon points="52,28 56,48 40,48" fill="#b39860"/>
+  
+  <!-- Snow cap on main peak -->
+  <polygon points="32,8 35,24 29,24" fill="#e8e4dc" opacity="0.9"/>
+  
+  <!-- Accent dots (representing stars or meditation) -->
+  <circle cx="20" cy="20" r="2" fill="#d4956a" opacity="0.6"/>
+  <circle cx="44" cy="22" r="2" fill="#d4956a" opacity="0.6"/>
+</svg>

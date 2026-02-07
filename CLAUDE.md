@@ -1,7 +1,7 @@
 # CLAUDE.md — Instructions pour Claude Code
 
 ## Contexte du projet
-MILARIPPA est un chatbot RAG (Retrieval Augmented Generation) qui permet de converser
+MILAREPA est un chatbot RAG (Retrieval Augmented Generation) qui permet de converser
 avec Jetsun Milarepa, le yogi-poète tibétain du XIe siècle. L'utilisateur pose des questions
 et reçoit des réponses dans le style poétique et spirituel de Milarepa, basées sur ses
 écrits authentiques (1 400+ pages de corpus).

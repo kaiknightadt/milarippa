@@ -1,4 +1,4 @@
-# 🚀 MILARIPPA - Deployment Guide
+# 🚀 MILAREPA - Deployment Guide
 
 ## Déploiement sur Render.com
 

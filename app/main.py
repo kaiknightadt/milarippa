@@ -1,17 +1,21 @@
 """
-MILARIPPA - Serveur Flask
+MILAREPA - Serveur Flask
 =========================
 Interface web pour discuter avec Milarepa.
 Historique sauvegardé dans Supabase.
 """
 
 import os
+import sys
 import json
 import hashlib
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
 from supabase import create_client
+
+# Add app directory to path for relative imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from rag import generate_response
 
 load_dotenv()

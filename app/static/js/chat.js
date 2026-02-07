@@ -1,4 +1,4 @@
-// === MILARIPPA — Chat Logic with Conversation History ===
+// === MILAREPA — Chat Logic with Conversation History ===
 
 const chatContainer = document.getElementById('chatContainer');
 const messageInput = document.getElementById('messageInput');
@@ -279,7 +279,19 @@ function addTypingIndicator() {
 
     const typing = document.createElement('div');
     typing.className = 'typing-indicator';
-    typing.innerHTML = '<span></span><span></span><span></span>';
+    
+    // Text: "Milarepa médite..."
+    const textSpan = document.createElement('div');
+    textSpan.className = 'typing-indicator-text';
+    textSpan.textContent = 'Milarepa médite';
+    
+    // Animated dots
+    const dotsDiv = document.createElement('div');
+    dotsDiv.className = 'typing-indicator-dots';
+    dotsDiv.innerHTML = '<span></span><span></span><span></span>';
+    
+    typing.appendChild(textSpan);
+    typing.appendChild(dotsDiv);
 
     messageDiv.appendChild(avatar);
     messageDiv.appendChild(typing);

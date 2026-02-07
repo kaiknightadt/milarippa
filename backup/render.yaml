@@ -1,0 +1,36 @@
+# === MILARIPPA - Render Deployment ===
+
+services:
+  - type: web
+    name: milarippa
+    env: docker
+    plan: free
+    
+    # Build configuration
+    dockerfilePath: ./Dockerfile
+    
+    # Environment variables
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: PORT
+        value: 8000
+      - key: FLASK_ENV
+        value: production
+      - key: EMBEDDING_MODEL
+        value: text-embedding-3-small
+      - key: CLAUDE_MODEL
+        value: claude-sonnet-4-20250514
+    
+    # Health check
+    healthCheckPath: /
+    numInstances: 1
+    
+    # Auto-deploy on push
+    autoDeploy: true
