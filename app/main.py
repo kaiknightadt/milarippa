@@ -77,16 +77,26 @@ def get_messages(conversation_id):
     try:
         result = supabase.table("messages").select("*").eq("conversation_id", conversation_id).order("created_at").execute()
         
+        print(f"📥 GET /api/conversations/{conversation_id}/messages")
+        print(f"   Résultat Supabase: {len(result.data)} messages trouvés")
+        
         # Convertir sources JSON
         messages = []
         for msg in result.data:
             if msg.get("sources"):
-                msg["sources"] = json.loads(msg["sources"]) if isinstance(msg["sources"], str) else msg["sources"]
+                try:
+                    msg["sources"] = json.loads(msg["sources"]) if isinstance(msg["sources"], str) else msg["sources"]
+                except Exception as e:
+                    print(f"   ⚠️  Erreur parsing sources: {e}")
+                    msg["sources"] = []
             messages.append(msg)
         
+        print(f"   ✓ {len(messages)} messages retournés au frontend")
         return jsonify(messages)
     except Exception as e:
-        print(f"❌ Erreur: {e}")
+        print(f"❌ Erreur GET messages: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 
@@ -117,44 +127,59 @@ def chat():
         return jsonify({"error": "conversation_id manquant"}), 400
     
     try:
+        print(f"\n📨 POST /api/chat")
+        print(f"   Question: {question[:60]}...")
+        print(f"   Conversation ID: {conversation_id}")
+        
         # Récupérer l'historique des messages
         messages_result = supabase.table("messages").select("role, content").eq("conversation_id", conversation_id).order("created_at").execute()
         history = messages_result.data if messages_result.data else []
+        print(f"   📋 Historique: {len(history)} messages")
         
         # Générer la réponse RAG
+        print(f"   🤖 Génération réponse RAG...")
         result = generate_response(question, history)
+        print(f"   ✓ Réponse générée ({len(result['answer'])} caractères)")
         
         # Sauvegarder le message utilisateur
-        supabase.table("messages").insert({
+        print(f"   💾 Sauvegarde message utilisateur...")
+        user_msg_result = supabase.table("messages").insert({
             "conversation_id": conversation_id,
             "role": "user",
             "content": question
         }).execute()
+        print(f"   ✓ Message utilisateur sauvegardé (ID: {user_msg_result.data[0].get('id', '?') if user_msg_result.data else 'erreur'})")
         
         # Sauvegarder la réponse
+        print(f"   💾 Sauvegarde réponse assistant...")
         sources_json = json.dumps(result.get("sources", []))
-        supabase.table("messages").insert({
+        assistant_msg_result = supabase.table("messages").insert({
             "conversation_id": conversation_id,
             "role": "assistant",
             "content": result["answer"],
             "sources": sources_json
         }).execute()
+        print(f"   ✓ Réponse assistant sauvegardée (ID: {assistant_msg_result.data[0].get('id', '?') if assistant_msg_result.data else 'erreur'})")
         
         # Mettre à jour le titre si c'est le premier message
         conv = supabase.table("conversations").select("title").eq("id", conversation_id).execute()
         if conv.data and conv.data[0]["title"] == "Nouvelle conversation":
             title = question[:60].rstrip(".,!?") or "Nouvelle conversation"
             supabase.table("conversations").update({"title": title, "updated_at": datetime.utcnow().isoformat()}).eq("id", conversation_id).execute()
+            print(f"   ✓ Titre conversation mis à jour: '{title}'")
         else:
             supabase.table("conversations").update({"updated_at": datetime.utcnow().isoformat()}).eq("id", conversation_id).execute()
         
+        print(f"   ✅ Chat endpoint terminé avec succès")
         return jsonify({
             "answer": result["answer"],
             "sources": result.get("sources", []),
         })
     
     except Exception as e:
-        print(f"❌ Erreur: {e}")
+        print(f"❌ Erreur /api/chat: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 

@@ -167,7 +167,17 @@ async function selectConversation(conversationId) {
 async function loadMessages(conversationId) {
     try {
         const response = await fetch(`/api/conversations/${conversationId}/messages`);
+        
+        if (!response.ok) {
+            console.error('❌ Erreur serveur:', response.status, response.statusText);
+            const errorText = await response.text();
+            console.error('Détails:', errorText);
+            chatContainer.innerHTML = '<p style="color: red; padding: 1rem;">Erreur lors du chargement des messages.</p>';
+            return;
+        }
+        
         const messages = await response.json();
+        console.log(`📨 Chargement de ${messages.length} messages pour conversation ${conversationId}`);
         
         chatContainer.innerHTML = '';
         
@@ -192,15 +202,20 @@ async function loadMessages(conversationId) {
             chatContainer.appendChild(welcomeDiv);
         } else {
             // Afficher les messages
-            messages.forEach(msg => {
-                // Sources arrivent déjà parsées du backend, pas besoin de JSON.parse()
-                addMessage(msg.content, msg.role === 'assistant' ? 'milarepa' : 'user', msg.sources || null);
+            messages.forEach((msg, idx) => {
+                try {
+                    console.log(`  Message ${idx + 1}: role=${msg.role}, content length=${msg.content?.length || 0}`);
+                    addMessage(msg.content, msg.role === 'assistant' ? 'milarepa' : 'user', msg.sources || null);
+                } catch (msgError) {
+                    console.error(`  ❌ Erreur chargement message ${idx + 1}:`, msgError.message);
+                }
             });
         }
         
         scrollToBottom();
     } catch (error) {
-        console.error('Erreur:', error);
+        console.error('❌ Erreur loadMessages:', error.message);
+        chatContainer.innerHTML = '<p style="color: red; padding: 1rem;">Erreur lors du chargement des messages.</p>';
     }
 }
 
@@ -328,6 +343,8 @@ async function sendMessage() {
     const message = messageInput.value.trim();
     if (!message || !currentConversationId) return;
 
+    console.log(`📤 Envoi message: "${message.substring(0, 50)}..."`);
+
     // Désactiver l'input
     messageInput.value = '';
     messageInput.style.height = 'auto';
@@ -340,6 +357,7 @@ async function sendMessage() {
     addTypingIndicator();
 
     try {
+        console.log(`🔄 Appel /api/chat avec conversation_id=${currentConversationId}`);
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -349,22 +367,39 @@ async function sendMessage() {
             }),
         });
 
+        console.log(`📥 Réponse serveur: ${response.status} ${response.statusText}`);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Erreur serveur:', response.status);
+            console.error('Détails:', errorText.substring(0, 500));
+            removeTypingIndicator();
+            addMessage("Le serveur a rencontré une erreur. Détails dans la console (F12).", 'milarepa');
+            sendBtn.disabled = false;
+            return;
+        }
+
         const data = await response.json();
+        console.log(`✓ Données reçues: answer=${data.answer?.length || 0} chars, sources=${data.sources?.length || 0}`);
+        
         removeTypingIndicator();
 
         if (data.error) {
+            console.warn('⚠️  Erreur dans la réponse:', data.error);
             addMessage("Le silence de la montagne m'empêche de te répondre en cet instant. Réessaie, ami(e).", 'milarepa');
         } else {
             addMessage(data.answer, 'milarepa', data.sources);
         }
         
         // Recharger la liste des conversations (pour mettre à jour le titre et last updated)
+        console.log('🔄 Rechargement conversations...');
         await loadConversations();
 
     } catch (error) {
         removeTypingIndicator();
         addMessage("Le vent des sommets a emporté ma réponse. Réessaie dans un instant.", 'milarepa');
-        console.error('Erreur:', error);
+        console.error('❌ Erreur sendMessage:', error.message);
+        console.error('Stack:', error.stack);
     }
 
     sendBtn.disabled = false;
