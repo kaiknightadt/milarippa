@@ -16,7 +16,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copier l'application
 COPY app/ /app/app/
 COPY config/ /app/config/
-COPY .env.example /app/.env
 
 # Créer les répertoires de données
 RUN mkdir -p /app/data/chunks
