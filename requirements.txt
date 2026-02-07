@@ -1,0 +1,20 @@
+# === MILARIPPA - Dépendances ===
+
+# Framework web
+flask==3.1.0
+
+# APIs
+anthropic==0.43.0
+openai==1.60.0
+supabase==2.11.0
+
+# Extraction PDF
+pymupdf==1.25.3        # aka fitz - extraction texte PDF robuste
+
+# Traitement texte
+tiktoken==0.8.0         # comptage de tokens
+python-dotenv==1.0.1    # variables d'environnement
+
+# Utilitaires
+tqdm==4.67.1            # barres de progression
+jsonlines==4.0.0        # format JSONL pour les chunks

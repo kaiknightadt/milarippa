@@ -1,0 +1,18 @@
+# Environnement
+.env
+venv/
+__pycache__/
+*.pyc
+
+# Données (trop lourdes pour Git)
+data/raw/*.pdf
+data/processed/*.txt
+data/chunks/*.jsonl
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
