@@ -52,9 +52,22 @@ def main():
         print(f"   Copie tes PDFs dans le dossier {RAW_DIR}/ d'abord !")
         return
 
-    print(f"📚 {len(pdf_files)} PDF(s) trouvé(s)\n")
-
+    # Filtrer pour ne traiter que les nouveaux PDFs
+    new_pdf_files = []
     for pdf_path in pdf_files:
+        output_path = PROCESSED_DIR / f"{pdf_path.stem}.txt"
+        if not output_path.exists():
+            new_pdf_files.append(pdf_path)
+
+    if not new_pdf_files:
+        print(f"✅ Tous les PDFs ont déjà été extraits ({len(pdf_files)} fichiers)")
+        print(f"   Aucun nouveau fichier à traiter.")
+        return
+
+    print(f"📚 {len(pdf_files)} PDF(s) trouvé(s)")
+    print(f"📚 {len(new_pdf_files)} nouveau(x) PDF(s) à traiter\n")
+
+    for pdf_path in new_pdf_files:
         print(f"📖 Extraction de {pdf_path.name}...")
         text = extract_pdf(pdf_path)
 

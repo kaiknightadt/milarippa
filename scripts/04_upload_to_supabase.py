@@ -30,13 +30,34 @@ def main():
         print("   Lance d'abord : python scripts/03_generate_embeddings.py")
         return
 
-    # Charger les chunks
-    chunks = []
+    # Charger tous les chunks
+    all_chunks = []
     with open(CHUNKS_FILE, "r", encoding="utf-8") as f:
         for line in f:
-            chunks.append(json.loads(line))
+            all_chunks.append(json.loads(line))
 
-    print(f"📤 Upload de {len(chunks)} chunks vers Supabase...\n")
+    print(f"📋 {len(all_chunks)} chunks chargés depuis le fichier")
+
+    # Récupérer les IDs déjà présents dans Supabase
+    print(f"🔍 Vérification des chunks déjà présents dans Supabase...")
+    try:
+        existing_chunks = supabase.table("milarepa_chunks").select("id").execute()
+        existing_ids = {chunk["id"] for chunk in existing_chunks.data}
+        print(f"📊 {len(existing_ids)} chunk(s) déjà en base")
+    except Exception as e:
+        print(f"⚠️ Erreur lors de la récupération des IDs : {e}")
+        print(f"   Tentative d'upload de tous les chunks...")
+        existing_ids = set()
+
+    # Filtrer pour ne uploader que les nouveaux chunks
+    chunks = [c for c in all_chunks if c["id"] not in existing_ids]
+
+    if not chunks:
+        print(f"✅ Tous les chunks sont déjà dans Supabase ({len(all_chunks)} chunks)")
+        print(f"   Aucun nouveau chunk à uploader.")
+        return
+
+    print(f"📤 Upload de {len(chunks)} nouveau(x) chunk(s) vers Supabase...\n")
 
     # Upload par batches
     success = 0
@@ -68,7 +89,7 @@ def main():
 
     print(f"\n{'='*50}")
     print(f"🎉 UPLOAD TERMINÉ")
-    print(f"   ✅ Succès : {success}")
+    print(f"   ✅ Nouveaux chunks uploadés : {success}")
     print(f"   ❌ Erreurs : {errors}")
 
     # Vérification

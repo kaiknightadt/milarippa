@@ -40,13 +40,31 @@ def main():
         print("   Lance d'abord : python scripts/02_chunk_texts.py")
         return
 
-    # Charger les chunks
-    chunks = []
+    # Charger tous les chunks
+    all_chunks = []
     with open(INPUT_FILE, "r", encoding="utf-8") as f:
         for line in f:
-            chunks.append(json.loads(line))
+            all_chunks.append(json.loads(line))
 
-    print(f"📊 {len(chunks)} chunks à vectoriser")
+    # Charger les chunks qui ont déjà des embeddings
+    processed_chunk_ids = set()
+    if OUTPUT_FILE.exists():
+        with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
+            for line in f:
+                chunk = json.loads(line)
+                processed_chunk_ids.add(chunk["id"])
+        print(f"📋 {len(processed_chunk_ids)} chunk(s) déjà vectorisé(s)")
+
+    # Filtrer pour ne traiter que les nouveaux chunks
+    chunks = [c for c in all_chunks if c["id"] not in processed_chunk_ids]
+
+    if not chunks:
+        print(f"✅ Tous les chunks ont déjà des embeddings ({len(all_chunks)} chunks)")
+        print(f"   Aucun nouveau chunk à vectoriser.")
+        return
+
+    print(f"📊 {len(all_chunks)} chunks au total")
+    print(f"📊 {len(chunks)} nouveau(x) chunk(s) à vectoriser")
     print(f"🤖 Modèle : {EMBEDDING_MODEL}")
     print(f"📦 Batch size : {BATCH_SIZE}\n")
 
@@ -68,16 +86,18 @@ def main():
             # On continue avec les suivants
             continue
 
-    # Sauvegarder
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    # Sauvegarder en mode APPEND
+    mode = "a" if OUTPUT_FILE.exists() else "w"
+    with open(OUTPUT_FILE, mode, encoding="utf-8") as f:
         for chunk in all_results:
             f.write(json.dumps(chunk, ensure_ascii=False) + "\n")
 
     print(f"\n{'='*50}")
     print(f"🎉 EMBEDDINGS GÉNÉRÉS")
-    print(f"   Chunks traités : {len(all_results)}/{len(chunks)}")
-    print(f"   Dimension vecteur : {len(all_results[0]['embedding'])}")
+    print(f"   Nouveaux chunks : {len(all_results)}/{len(chunks)}")
+    print(f"   Dimension vecteur : {len(all_results[0]['embedding']) if all_results else 'N/A'}")
     print(f"   Fichier : {OUTPUT_FILE}")
+    print(f"   Mode : {'APPEND (ajout)' if mode == 'a' else 'NOUVEAU'}")
 
     # Estimation du coût (text-embedding-3-small = $0.02 / 1M tokens)
     total_tokens = sum(c.get("tokens", 0) for c in all_results)

@@ -49,6 +49,9 @@ SOURCE_CONFIG = {
     "The-Life-of-Milarepa": {"langue": "en", "nom": "The Life of Milarepa (Lhalungpa)"},
     "wh095_Chang_Sixty": {"langue": "en", "nom": "Sixty Songs (Chang)"},
     "Milarepa_-_Wikiquote": {"langue": "en", "nom": "Wikiquote Milarepa"},
+    "Le_livre_tibetain_de_la_vie_et_de_la_mort": {"langue": "fr", "nom": "Le Livre Tibétain de la Vie et de la Mort (Sogyal Rinpoché)"},
+    "Padmasambhava_-_Advice_From_the_Lotus_Born": {"langue": "en", "nom": "Advice From the Lotus Born (Padmasambhava)"},
+    "padmasambhava_la_clef_du_sens_profond": {"langue": "fr", "nom": "La Clef du Sens Profond (Padmasambhava)"},
 }
 
 
@@ -221,17 +224,41 @@ def main():
         print("   Lance d'abord : python scripts/01_extract_text.py")
         return
 
+    # Charger les chunks existants pour identifier les fichiers déjà traités
+    output_path = CHUNKS_DIR / "milarepa_chunks.jsonl"
+    processed_sources = set()
+
+    if output_path.exists():
+        with open(output_path, "r", encoding="utf-8") as f:
+            for line in f:
+                chunk = json.loads(line)
+                # Extraire le nom du fichier source de l'ID (format: filename_0000)
+                source_file = "_".join(chunk["id"].split("_")[:-1])
+                processed_sources.add(source_file)
+        print(f"📋 {len(processed_sources)} fichier(s) déjà traité(s)")
+
+    # Filtrer pour ne traiter que les nouveaux fichiers
+    new_txt_files = [f for f in txt_files if f.stem not in processed_sources]
+
+    if not new_txt_files:
+        print(f"✅ Tous les fichiers .txt ont déjà été chunkés ({len(txt_files)} fichiers)")
+        print(f"   Aucun nouveau fichier à traiter.")
+        return
+
+    print(f"📚 {len(txt_files)} fichier(s) .txt trouvé(s)")
+    print(f"📚 {len(new_txt_files)} nouveau(x) fichier(s) à chunker\n")
+
     all_chunks = []
 
-    for txt_path in txt_files:
+    for txt_path in new_txt_files:
         print(f"\n📖 Traitement de {txt_path.name}...")
         chunks = process_file(txt_path)
         all_chunks.extend(chunks)
         print(f"  ✅ {len(chunks)} chunks créés")
 
-    # Sauvegarder en JSONL
-    output_path = CHUNKS_DIR / "milarepa_chunks.jsonl"
-    with open(output_path, "w", encoding="utf-8") as f:
+    # Sauvegarder en mode APPEND (ajouter aux chunks existants)
+    mode = "a" if output_path.exists() else "w"
+    with open(output_path, mode, encoding="utf-8") as f:
         for chunk in all_chunks:
             f.write(json.dumps(asdict(chunk), ensure_ascii=False) + "\n")
 
@@ -243,11 +270,12 @@ def main():
 
     print(f"\n{'='*50}")
     print(f"🎉 CHUNKING TERMINÉ")
-    print(f"   Total chunks  : {len(all_chunks)}")
-    print(f"   Total tokens  : {total_tokens:,}")
-    print(f"   Moyenne/chunk : {total_tokens // len(all_chunks)} tokens")
+    print(f"   Nouveaux chunks : {len(all_chunks)}")
+    print(f"   Total tokens    : {total_tokens:,}")
+    print(f"   Moyenne/chunk   : {total_tokens // len(all_chunks)} tokens")
     print(f"   Types : {types}")
     print(f"   Fichier : {output_path}")
+    print(f"   Mode : {'APPEND (ajout)' if mode == 'a' else 'NOUVEAU'}")
 
 
 if __name__ == "__main__":
