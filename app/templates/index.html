@@ -9,6 +9,21 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+    <!-- Overlay for sidebar -->
+    <div class="overlay" id="sidebarOverlay"></div>
+    
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content">
+            <p class="modal-title" id="modalTitle">Supprimer ce dialogue ?</p>
+            <p class="modal-message" id="modalMessage">Cette action est irréversible.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-cancel" id="modalCancel">Annuler</button>
+                <button class="modal-btn modal-delete" id="modalConfirm">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
     <div class="app">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">

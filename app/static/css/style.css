@@ -85,6 +85,128 @@ body {
     width: 16px;
 }
 
+/* === OVERLAY (for sidebar mobile) === */
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 997;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* === CONFIRMATION MODAL === */
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.visible {
+    display: flex;
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border: 2px solid var(--accent-gold);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 320px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.modal-message {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.modal-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 100px;
+}
+
+.modal-cancel {
+    background: var(--bg-input);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+.modal-cancel:hover {
+    background: var(--border);
+    color: var(--text-primary);
+}
+
+.modal-delete {
+    background: #c94a3a;
+    color: white;
+    border: 1px solid #a83a2a;
+}
+
+.modal-delete:hover {
+    background: #b83a2a;
+    box-shadow: 0 0 20px rgba(201, 74, 58, 0.3);
+}
+
 /* === SIDEBAR === */
 
 .sidebar {
@@ -522,14 +644,19 @@ textarea::placeholder {
         justify-content: center;
     }
     
+    /* Show overlay when sidebar open */
+    .overlay {
+        display: block;
+    }
+    
     /* Hide sidebar by default */
     .sidebar {
         position: fixed;
-        left: -240px;
+        left: -100%;
         top: 0;
         height: 100vh;
-        z-index: 998;
-        width: 240px;
+        z-index: 1000;
+        width: min(80vw, 240px);
         border-right: 1px solid var(--border);
         transition: left 0.3s ease-out;
         box-shadow: 2px 0 10px var(--shadow);
@@ -540,22 +667,8 @@ textarea::placeholder {
         left: 0;
     }
     
-    /* Overlay behind sidebar */
-    .sidebar::before {
-        content: '';
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: -1;
-        opacity: 0;
-        transition: opacity 0.3s;
-        pointer-events: none;
-    }
-    
-    .sidebar.open::before {
+    /* Show overlay when sidebar is open */
+    .sidebar.open ~ #sidebarOverlay {
         opacity: 1;
         pointer-events: all;
     }

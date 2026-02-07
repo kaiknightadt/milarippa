@@ -5,6 +5,10 @@ const messageInput = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
 const conversationsList = document.getElementById('conversationsList');
 const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+const confirmModal = document.getElementById('confirmModal');
+const modalCancel = document.getElementById('modalCancel');
+const modalConfirm = document.getElementById('modalConfirm');
 
 let currentConversationId = null;
 
@@ -13,26 +17,71 @@ let currentConversationId = null;
 function toggleSidebar() {
     if (sidebar) {
         sidebar.classList.toggle('open');
+        updateOverlay();
     }
 }
 
 function closeSidebar() {
     if (sidebar) {
         sidebar.classList.remove('open');
+        updateOverlay();
     }
 }
 
-// Close sidebar when clicking outside (on overlay)
-document.addEventListener('click', (e) => {
-    if (sidebar && sidebar.classList.contains('open')) {
-        // Close only if clicking on the overlay or sidebar is on mobile
-        if (window.innerWidth < 768) {
-            if (!sidebar.contains(e.target) && e.target.id !== 'burgerMenu') {
-                closeSidebar();
-            }
+function updateOverlay() {
+    if (sidebarOverlay && sidebar) {
+        if (sidebar.classList.contains('open')) {
+            sidebarOverlay.classList.add('visible');
+        } else {
+            sidebarOverlay.classList.remove('visible');
         }
     }
-});
+}
+
+// Close sidebar when clicking on overlay
+if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', () => {
+        closeSidebar();
+    });
+}
+
+// === CONFIRMATION MODAL ===
+
+function showConfirmModal(title = 'Supprimer ce dialogue ?', message = 'Cette action est irréversible.') {
+    return new Promise((resolve) => {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalMessage').textContent = message;
+        confirmModal.classList.add('visible');
+        
+        const onConfirm = () => {
+            confirmModal.classList.remove('visible');
+            cleanup();
+            resolve(true);
+        };
+        
+        const onCancel = () => {
+            confirmModal.classList.remove('visible');
+            cleanup();
+            resolve(false);
+        };
+        
+        const cleanup = () => {
+            modalConfirm.removeEventListener('click', onConfirm);
+            modalCancel.removeEventListener('click', onCancel);
+            document.removeEventListener('keydown', onEscKey);
+        };
+        
+        const onEscKey = (e) => {
+            if (e.key === 'Escape') {
+                onCancel();
+            }
+        };
+        
+        modalConfirm.addEventListener('click', onConfirm);
+        modalCancel.addEventListener('click', onCancel);
+        document.addEventListener('keydown', onEscKey);
+    });
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
@@ -156,7 +205,9 @@ async function loadMessages(conversationId) {
 
 async function deleteConversation(conversationId, event) {
     event.stopPropagation();
-    if (window.confirm('Supprimer ce dialogue ?')) {
+    const confirmed = await showConfirmModal('Supprimer ce dialogue ?', 'Cette action est irréversible.');
+    
+    if (confirmed) {
         try {
             await fetch(`/api/conversations/${conversationId}`, { method: 'DELETE' });
             await loadConversations();
