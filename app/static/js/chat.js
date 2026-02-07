@@ -193,7 +193,8 @@ async function loadMessages(conversationId) {
         } else {
             // Afficher les messages
             messages.forEach(msg => {
-                addMessage(msg.content, msg.role === 'assistant' ? 'milarepa' : 'user', msg.sources ? JSON.parse(msg.sources) : null);
+                // Sources arrivent déjà parsées du backend, pas besoin de JSON.parse()
+                addMessage(msg.content, msg.role === 'assistant' ? 'milarepa' : 'user', msg.sources || null);
             });
         }
         
