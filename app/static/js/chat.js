@@ -133,7 +133,7 @@ async function deleteConversation(conversationId, event) {
                 if (conversationsList.children.length > 0) {
                     const firstConv = conversationsList.querySelector('.conversation-item');
                     if (firstConv) {
-                        const convId = firstConv.getAttribute('data-id');
+                        const convId = firstConv.getAttribute('onclick').match(/'([^']+)'/)[1];
                         await selectConversation(convId);
                     }
                 } else {
@@ -143,34 +143,6 @@ async function deleteConversation(conversationId, event) {
         } catch (error) {
             console.error('Erreur:', error);
         }
-    }
-}
-
-// Fix: store conversation id in data-id attribute
-async function loadConversations() {
-    try {
-        const response = await fetch('/api/conversations');
-        const conversations = await response.json();
-        
-        conversationsList.innerHTML = '';
-        if (conversations.length === 0) {
-            conversationsList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.8rem; padding: 1rem; text-align: center;">Aucun dialogue</p>';
-            return;
-        }
-        
-        conversations.forEach(conv => {
-            const convItem = document.createElement('button');
-            convItem.className = 'conversation-item' + (conv.id === currentConversationId ? ' active' : '');
-            convItem.setAttribute('data-id', conv.id);
-            convItem.innerHTML = `
-                <span class="conversation-item-title">${conv.title}</span>
-                <span class="conversation-delete" onclick="deleteConversation('${conv.id}', event)">✕</span>
-            `;
-            convItem.onclick = () => selectConversation(conv.id);
-            conversationsList.appendChild(convItem);
-        });
-    } catch (error) {
-        console.error('Erreur:', error);
     }
 }
 
@@ -302,36 +274,4 @@ async function sendMessage() {
 
     sendBtn.disabled = false;
     messageInput.focus();
-}
-
-async function resetConversation() {
-    try {
-        await fetch('/api/reset', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: message,
-                conversation_id: currentConversationId,
-            }),
-        });
-
-        const data = await response.json();
-        removeTypingIndicator();
-
-        if (data.error) {
-            addMessage("Le silence de la montagne m'empêche de te répondre en cet instant. Réessaie, ami(e).", 'milarepa');
-        } else {
-            addMessage(data.answer, 'milarepa', data.sources);
-        }
-        
-        // Recharger la liste des conversations (pour mettre à jour le titre et last updated)
-        await loadConversations();
-
-    } catch (error) {
-        removeTypingIndicator();
-        addMessage("Le vent des sommets a emporté ma réponse. Réessaie dans un instant.", 'milarepa');
-        console.error('Erreur:', error);
-    }
-
-    sendBtn.disabled = false;
 }
