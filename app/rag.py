@@ -85,18 +85,24 @@ def generate_response(question: str, conversation_history: list[dict] = None) ->
     # 2. Recherche des passages pertinents
     chunks = search_similar_chunks(query_embedding)
 
-    # 3. Construire le prompt avec le contexte
+    # 3. Calculer le score de similarité moyen
+    avg_similarity = 0.0
+    if chunks:
+        avg_similarity = sum(c.get("similarity", 0) for c in chunks) / len(chunks)
+
+    # 4. Construire le prompt avec le contexte
     system_prompt = load_system_prompt()
     context = format_context(chunks)
     system_prompt = system_prompt.replace("{context}", context)
+    system_prompt = system_prompt.replace("{avg_similarity}", str(avg_similarity))
 
-    # 4. Construire les messages (avec historique si disponible)
+    # 5. Construire les messages (avec historique si disponible)
     messages = []
     if conversation_history:
         messages.extend(conversation_history)
     messages.append({"role": "user", "content": question})
 
-    # 5. Appel à Claude
+    # 6. Appel à Claude
     response = claude_client.messages.create(
         model=CLAUDE_MODEL,
         max_tokens=1024,
