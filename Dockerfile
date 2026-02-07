@@ -13,9 +13,9 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier l'application et la config
+# Copier l'application
 COPY app/ ./app/
-COPY config/ ./config/ 2>/dev/null || true
+COPY config/ ./config/
 
 # Créer les répertoires nécessaires
 RUN mkdir -p /app/data/chunks
