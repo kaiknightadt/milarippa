@@ -4,8 +4,35 @@ const chatContainer = document.getElementById('chatContainer');
 const messageInput = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
 const conversationsList = document.getElementById('conversationsList');
+const sidebar = document.getElementById('sidebar');
 
 let currentConversationId = null;
+
+// === SIDEBAR MANAGEMENT (MOBILE) ===
+
+function toggleSidebar() {
+    if (sidebar) {
+        sidebar.classList.toggle('open');
+    }
+}
+
+function closeSidebar() {
+    if (sidebar) {
+        sidebar.classList.remove('open');
+    }
+}
+
+// Close sidebar when clicking outside (on overlay)
+document.addEventListener('click', (e) => {
+    if (sidebar && sidebar.classList.contains('open')) {
+        // Close only if clicking on the overlay or sidebar is on mobile
+        if (window.innerWidth < 768) {
+            if (!sidebar.contains(e.target) && e.target.id !== 'burgerMenu') {
+                closeSidebar();
+            }
+        }
+    }
+});
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
@@ -81,6 +108,10 @@ async function selectConversation(conversationId) {
     currentConversationId = conversationId;
     await loadMessages(conversationId);
     await loadConversations();
+    // Auto-close sidebar on mobile after selecting conversation
+    if (window.innerWidth < 768) {
+        closeSidebar();
+    }
     messageInput.focus();
 }
 
