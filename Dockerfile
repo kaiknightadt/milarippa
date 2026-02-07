@@ -13,16 +13,15 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier l'application
-COPY app/ /app/app/
-COPY config/ /app/config/
+# Copier l'application et la config
+COPY app/ ./app/
+COPY config/ ./config/ 2>/dev/null || true
 
-# Créer les répertoires de données
+# Créer les répertoires nécessaires
 RUN mkdir -p /app/data/chunks
 
-# Variable d'environnement
+# Définir les variables d'environnement
 ENV FLASK_APP=app/main.py
-ENV PORT=8000
 ENV PYTHONUNBUFFERED=1
 
 # Exposer le port
